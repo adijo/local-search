@@ -58,15 +58,7 @@ class Board(BoardBase):
                             board[i][j] = 1
 
     def _print_board(self, board):
-        answer = []
-        for row in board:
-            conv = []
-            for x in row:
-                if x:
-                    conv.append("Q")
-                else:
-                    conv.append(".")
-            answer.append(" ".join(conv))
+        answer = [" ".join(map(lambda x : "Q" if x else ".", row)) for row in board]
         return "\n".join(answer)
 
 
@@ -79,6 +71,7 @@ class Board(BoardBase):
 
     def improvise(self, limit = 100, random_restart = False, restart_probability = 0.5, show = False):
         costs = []
+        self.board = self._randomize(self.board)
         heuristic_cost = self.eval(self.board)
         iterations = 0
         costs.append(heuristic_cost)
@@ -92,7 +85,7 @@ class Board(BoardBase):
 
             iterations += 1
             if heuristic_cost == 0:
-                return self.board
+                return 0
             
             curr_cost = heuristic_cost
             initial_f = None
@@ -116,7 +109,7 @@ class Board(BoardBase):
             print self
         
             data = pd.DataFrame({'Indices' : range(len(costs)), "Cost" : costs})
-            plt = ggplot(aes(x = 'Indices',y = 'Cost'),data=data) + \
+            plt = ggplot(aes(x = 'Indices',y = 'Cost'), data = data) + \
             geom_point()
             plt.__repr__()
 
