@@ -18,12 +18,14 @@ Some stats after implementing these two techniques:
 * Hill climbing:
 
   * **Cost (one run): 4.** 
-  * **Average cost (100 runs): 3.10**
+  * ![](https://github.com/adijo/local-search/blob/master/images/hill_climbing.png)
+  * **Average cost (100 runs): 3.10.**
   
 * Hill climbing with random restart:
 
-  * **Cost (one run): 0**
-  * **Average cost (100 runs): 1.37**
+  * **Cost (one run): 1.**
+  * ![](https://github.com/adijo/local-search/blob/master/images/hill_climbing_rr.png)
+  * **Average cost (100 runs): 1.37.**
   
 
 
