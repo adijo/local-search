@@ -13,8 +13,13 @@ to 0. Hill climbing as a distinct disadvantage of being caught in a local minima
 * **Hill climbing with random restart:** Often times, it is benefitial to randomly reset your state to avoid getting 
 stuck in local minimas. This is exactly what the random restart feature facilitates. 
 
-* **Simulated annealing:** Simulated annealing is a technique in which potentially bad moves are allowed early on in the search process with a certain probability, but this probability goes on reducing as the search progresses. The probability is a function of a parameter called temperature `T`, which is borrowed from the process of annealing from metallurgy.
-
+* **Simulated annealing:** Simulated annealing is a technique in which potentially bad moves are allowed early on in the search process with a certain probability, but this probability goes on reducing as the search progresses. The probability is a function of a parameter called temperature `T`, which is borrowed from the process of annealing from metallurgy. The basic algorithm is described as follows:
+  * Pick a start state `s_0`
+  * Initialize a temperature `T` to a high value.
+  * Have an energy function `eval` that maps a given state to an energy value. In our case, this is the same heursitic function that returns how many pairs of queens are potentially in an attacking position.
+  * Pick a random "neighbouring" state. 
+  * If the energy value of this neighbouring state is lower than the current energy value, change the current state to the new state.
+  * If it is not, choose the neighbouring state with a probability depending upon `T`. Higher the value of `T`, higher the probability.
 Some stats after implementing these two techniques:
 
 * Hill climbing:
