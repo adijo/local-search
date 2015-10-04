@@ -3,22 +3,8 @@ import random
 import math
 from ggplot import *
 import pandas as pd
+from board_base import BoardBase
 
-class BoardBase(object):
-
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def next_moves(self, board):
-        pass
-
-    @abstractmethod
-    def eval(self):
-        pass
-
-    @abstractmethod
-    def improvise(self):
-        pass
 
 class Board(BoardBase):
     def __init__(self):
@@ -26,7 +12,7 @@ class Board(BoardBase):
         self.board = [[None for y in xrange(self.limit)] for x in xrange(self.limit)]
         
         for row in self.board:
-            row[random.randrange(8)] = 1
+            row[random.randrange(self.limit)] = 1
      
         self.moves = [
         lambda x, y : (x, y + 1),
@@ -41,6 +27,10 @@ class Board(BoardBase):
         
     def __str__(self):
         return self._print_board(self.board)
+
+
+    def get_board(self):
+        return self.board
 
     def next_moves(self, board):
         for i in xrange(len(board)):
@@ -61,53 +51,49 @@ class Board(BoardBase):
         answer = [" ".join(map(lambda x : "Q" if x else ".", row)) for row in board]
         return "\n".join(answer)
 
-
-
     def _randomize(self, board):
         board = [[None for y in xrange(self.limit)] for x in xrange(self.limit)]
         for row in board:
-            row[random.randrange(8)] = 1
+            row[random.randrange(self.limit)] = 1
         return board
 
-    def improvise(self, limit = 100, random_restart = False, restart_probability = 0.5, show = False):
+    def improvise(self, board, limit = 100, random_restart = False, restart_probability = 0.5, show = False):
         costs = []
-        self.board = self._randomize(self.board)
-        heuristic_cost = self.eval(self.board)
+        board = self._randomize(board)
+        heuristic_cost = self.eval(board)
         iterations = 0
         costs.append(heuristic_cost)
         while iterations < limit:
-
             if random_restart:
                 random_value = random.random()
                 if random_value <= restart_probability:
-                    self.board = self._randomize(self.board)
-                    heuristic_cost = self.eval(self.board)
+                    board = self._randomize(board)
+                    heuristic_cost = self.eval(board)
 
             iterations += 1
             if heuristic_cost == 0:
+                least_board = board
                 return 0
             
             curr_cost = heuristic_cost
             initial_f = None
             future_f = None
-
-            for next_config in self.next_moves(self.board):
+            least_board = self._print_board(board)
+            for next_config in self.next_moves(board):
                 future_board, initial, future, new_cost = next_config
                 if new_cost < curr_cost:
                     curr_cost = new_cost
                     initial_f = initial
                     future_f = future
+                    least_board = self._print_board(board)
 
             if initial_f != None:
-                self.board[initial_f[0]][initial_f[1]] = None
-                self.board[future_f[0]][future_f[1]] = 1
+                board[initial_f[0]][initial_f[1]] = None
+                board[future_f[0]][future_f[1]] = 1
             heuristic_cost = curr_cost
             costs.append(heuristic_cost)
-        
         if show:
             print "Min heuristic cost attained:", min(costs)
-            print self
-        
             data = pd.DataFrame({'Indices' : range(len(costs)), "Cost" : costs})
             plt = ggplot(aes(x = 'Indices',y = 'Cost'), data = data) + \
             geom_point()
